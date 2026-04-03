@@ -2,118 +2,118 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAHNAVI // 2026</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>JAHNAVI // PREMERE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <style>
-        :root { --bg: #0a0a0a; --accent: #ffffff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap');
         
-        body { background: var(--bg); color: var(--accent); font-family: "Inter", sans-serif; overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        body { background: #000; color: #fff; font-family: 'Syncopate', sans-serif; overflow-x: hidden; }
 
-        #canvas-container { position: fixed; top: 0; left: 0; z-index: 1; }
-
-        .ui-layer {
-            position: relative;
-            z-index: 10;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 0 10%;
-            pointer-events: none;
-        }
-
-        .hero-text {
-            font-size: 12vw;
-            font-weight: 900;
-            line-height: 0.8;
-            letter-spacing: -0.05em;
-            text-transform: uppercase;
-        }
-
+        /* Custom Magnetic Cursor */
         .cursor {
-            width: 20px; height: 20px;
-            background: #fff;
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: difference;
-            transition: transform 0.1s ease;
+            width: 10px; height: 10px; background: #fff; border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 1000; mix-blend-mode: difference;
         }
 
-        .nav-info {
-            position: fixed;
-            bottom: 40px;
-            right: 40px;
-            font-family: monospace;
-            z-index: 100;
-            opacity: 0.5;
+        section { height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+        /* Section 1: Hero */
+        .hero h1 { font-size: 10vw; text-transform: uppercase; letter-spacing: -5px; }
+
+        /* Section 2: Interactive Gallery */
+        .gallery { background: #0a0a0a; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 50px; }
+        .card { 
+            height: 400px; background: #1a1a1a; border-radius: 10px; 
+            overflow: hidden; position: relative; filter: grayscale(1); transition: 0.5s;
         }
+        .card:hover { filter: grayscale(0); transform: scale(1.05); z-index: 10; }
+        .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+
+        /* Section 3: The Terminal */
+        .terminal { flex-direction: column; background: #000; }
+        #typewriter { font-size: 2rem; color: #0f0; font-family: monospace; width: 60%; text-align: center; }
+
+        .scroll-indicator { position: absolute; bottom: 20px; font-size: 0.7rem; opacity: 0.5; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
     </style>
 </head>
 <body>
 
-    <div class="cursor" id="cursor"></div>
-    <div id="canvas-container"></div>
+    <div class="cursor"></div>
 
-    <main class="ui-layer">
-        <div class="hero-text" id="name">Jahnavi</div>
-        <div class="hero-text" style="color: transparent; -webkit-text-stroke: 1px #fff;">Twenty</div>
-        <div class="hero-text">Six</div>
-    </main>
+    <section class="hero">
+        <h1 id="hero-name">JAHNAVI</h1>
+        <div class="scroll-indicator">SCROLL TO UNLOCK EXPERIENCE</div>
+    </section>
 
-    <div class="nav-info">COORD: <span id="coord">0,0</span></div>
+    <section class="gallery">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30" alt="Joy">
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176" alt="Celebration">
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1530103043960-ef38714abb15" alt="Vibe">
+        </div>
+    </section>
+
+    <section class="terminal">
+        <div id="typewriter"></div>
+    </section>
 
     <script>
-        // 1. THREE.JS 3D SCENE (The "Advanced" Part)
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-        // Create a morphing 3D Sphere
-        const geometry = new THREE.IcosahedronGeometry(2, 20);
-        const material = new THREE.MeshNormalMaterial({ wireframe: true });
-        const sphere = new THREE.Mesh(geometry, material);
-        scene.add(sphere);
-        camera.position.z = 5;
-
-        // 2. MOUSE TRACKING & INTERACTION
-        const mouse = { x: 0, y: 0 };
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-            
-            // Move custom cursor
-            gsap.to("#cursor", { x: e.clientX, y: e.clientY, duration: 0.5, ease: "power3.out" });
-            document.getElementById('coord').innerText = `${e.clientX}, ${e.clientY}`;
+        // Cursor Logic
+        const cursor = document.querySelector('.cursor');
+        window.addEventListener('mousemove', e => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.3 });
         });
 
-        // 3. ANIMATION LOOP
-        function animate() {
-            requestAnimationFrame(animate);
-            sphere.rotation.x += 0.005;
-            sphere.rotation.y += 0.005;
+        // Register ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
 
-            // Subtle reaction to mouse
-            sphere.position.x = mouse.x * 0.5;
-            sphere.position.y = mouse.y * 0.5;
-            
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        // 4. GSAP ENTRANCE
-        gsap.from(".hero-text", {
-            y: 200,
+        // Section 1 Animations
+        gsap.to("#hero-name", {
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                scrub: true
+            },
+            scale: 5,
             opacity: 0,
-            duration: 1.5,
+            filter: "blur(20px)"
+        });
+
+        // Section 2: Cards Floating Effect
+        gsap.from(".card", {
+            scrollTrigger: {
+                trigger: ".gallery",
+                start: "top center"
+            },
+            y: 100,
+            opacity: 0,
             stagger: 0.2,
-            ease: "expo.out"
+            duration: 1
+        });
+
+        // Section 3: Typewriter Effect
+        const text = "System Check: Jahnavi detected. Status: Legend. Mission: Have the best birthday ever. [ACCESS GRANTED]";
+        let i = 0;
+        
+        ScrollTrigger.create({
+            trigger: ".terminal",
+            onEnter: () => {
+                function typing() {
+                    if (i < text.length) {
+                        document.getElementById("typewriter").innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(typing, 50);
+                    }
+                }
+                typing();
+            }
         });
     </script>
 </body>
